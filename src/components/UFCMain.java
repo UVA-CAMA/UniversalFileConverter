@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 
 import javax.swing.JFrame;
@@ -58,23 +59,38 @@ public class UFCMain {
 		panel.add(label);
 		frame.add(panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		bwconv.write("Using Universal File Converter v1.0.1"); bwconv.newLine();
-		bwconv.write("(UFC_v1.0.1)");  bwconv.newLine();
+		bwconv.write("Using Universal File Converter v1.0.2"); bwconv.newLine();
+		bwconv.write("(UFC_v1.0.2)");  bwconv.newLine();
 		bwconv.write("Using fmtcnv_v3.1.1");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
 		bwconv.write("The file path for the first file is: " + (files[0].getAbsolutePath())); bwconv.newLine();
     	for (int i=0; i < files.length; i++) {
+    		ZonedDateTime startconversiontime = ZonedDateTime.now();
+    		bwconv.newLine();
+    		bwconv.write("Started converting at " + startconversiontime); bwconv.newLine();
 	    	myfilename = files[i].getAbsolutePath();
 	    	progressBar.setValue(i);
 	    	label.setText("Converting file number " + (i+1) + " of " + files.length + ":" + myfilename + ". Please wait...");
-	    	bwconv.newLine();
 	    	bwconv.write("Converting file number " + (i+1) + " of " + files.length + ":" + myfilename + "."); bwconv.newLine();
 	    	bwconv.write("The file size is: " + files[i].length()/1024 + " kilobytes"); bwconv.newLine();
 			frame.pack();
 			frame.setVisible(false);
 			frame.setLocationRelativeTo(null);
-	    	runconverter();
-	    	bwconv.write("Done converting at " + ZonedDateTime.now()); bwconv.newLine();
+	    	runconverter(startconversiontime);
+	    	ZonedDateTime endconversiontime = ZonedDateTime.now();
+	    	Duration d = Duration.between(startconversiontime, endconversiontime);
+	    	long dur = d.getSeconds();
+	    	Double durdouble = (double)dur;
+	    	Double d_per_mb = durdouble/(files[i].length()/1048576);
+	    	String dstring = Long.toString(dur);
+	    	  		
+	    	String d_per_mb_string = Double.toString(d_per_mb);
+	    	bwconv.write("Done converting at " + endconversiontime); bwconv.newLine();
+	    	
+	    	bwconv.write("Total conversion time: " + dstring + " seconds"); bwconv.newLine();
+	    	Double mb_filesize = (double)(files[i].length())/1048576;
+	    	String mb_string = Double.toString(mb_filesize);
+	    	bwconv.write("Conversion rate: " + d_per_mb_string +" secs per mb for a " + mb_string + " mb file"); bwconv.newLine();
     	}
     	progressBar.setValue(files.length);
     	label.setText("File conversion complete. Converted files are located in: " + destfolder );
@@ -114,7 +130,7 @@ public class UFCMain {
 	}
 	
 	
-	public void runconverter() {
+	public void runconverter(ZonedDateTime startconversiontime) {
 		// Run Ryan's C executable on the files selected by the user
 		try
 		{
@@ -135,7 +151,7 @@ public class UFCMain {
 			}
 			if (ext.equals("Stp")) {
 				bwconv.write("Entered Stp converter"); bwconv.newLine();
-				if (monitoringsystem.length()<2) {
+				if (monitoringsystem.length()<2) { // If we haven't already chosen a monitoring system, set it here
 					choosemonitoringsystem();
 				}
 				frame.setVisible(true);
@@ -149,7 +165,13 @@ public class UFCMain {
 				bwconv.write("Command1 string is: " + command1); bwconv.newLine();
 			    
 			    Runtime rt = Runtime.getRuntime();
+			    ZonedDateTime c1starttime = ZonedDateTime.now();
 			    Process proc1 = rt.exec(command1);
+			    bwconv.write("Command1 has been executed at " + c1starttime); bwconv.newLine();
+			    Duration d0 = Duration.between(startconversiontime, c1starttime);
+		    	long dur0 = d0.getSeconds();
+		    	String dstring0 = Long.toString(dur0);
+		    	bwconv.write("File load time: " + dstring0 + " seconds"); bwconv.newLine();	
 			    
 			    InputStream is = proc1.getInputStream();
 				InputStreamReader isr = new InputStreamReader(is);
@@ -162,10 +184,16 @@ public class UFCMain {
 					bw.write(line);
 					bw.newLine();
 				}
+				
 				proc1.waitFor();
-
-				bwconv.write("Command1 has been executed at " + ZonedDateTime.now()); bwconv.newLine();
-				bwconv.write("Command1 waiting has completed at " + ZonedDateTime.now()); bwconv.newLine();
+				ZonedDateTime c1endtime = ZonedDateTime.now();
+				bwconv.write("Command1 waiting has completed at " + c1endtime); bwconv.newLine();
+				
+				Duration d1 = Duration.between(c1starttime, c1endtime);
+		    	long dur1 = d1.getSeconds();
+		    	String dstring1 = Long.toString(dur1);
+		    	bwconv.write("Command 1 Time: " + dstring1 + " seconds"); bwconv.newLine();
+				
 				myfilename = (fullxmlfilepath);
 				bwconv.write("xml file path is: " + myfilename); bwconv.newLine();
 				bw.close();
@@ -181,9 +209,15 @@ public class UFCMain {
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
 			Process proc2 = rt2.exec(command2);
-			bwconv.write("Command2 has been executed at " + ZonedDateTime.now()); bwconv.newLine();
+			ZonedDateTime c2starttime = ZonedDateTime.now();
+			bwconv.write("Command2 has been executed at " + c2starttime); bwconv.newLine();
 			proc2.waitFor();
-			bwconv.write("Command2 waiting has completed at " + ZonedDateTime.now()); bwconv.newLine();
+			ZonedDateTime c2endtime = ZonedDateTime.now();
+			bwconv.write("Command2 waiting has completed at " + c2endtime); bwconv.newLine();
+			Duration d2 = Duration.between(c2starttime, c2endtime);
+	    	long dur2 = d2.getSeconds();
+	    	String dstring2 = Long.toString(dur2);
+	    	bwconv.write("Command 2 Time: " + dstring2 + " seconds"); bwconv.newLine();
 		}
 		catch(Throwable t)
 		{
