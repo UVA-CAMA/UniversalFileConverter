@@ -59,9 +59,9 @@ public class UFCMain {
 		panel.add(label);
 		frame.add(panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		bwconv.write("Using Universal File Converter v1.0.3"); bwconv.newLine();
-		bwconv.write("(UFC_v1.0.3)");  bwconv.newLine();
-		bwconv.write("Using fmtcnv_v3.2.0");  bwconv.newLine();
+		bwconv.write("Using Universal File Converter v1.0.5"); bwconv.newLine();
+		bwconv.write("(UFC_v1.0.5)");  bwconv.newLine();
+		bwconv.write("Using fmtcnv_v3.3.2");  bwconv.newLine();
 		bwconv.write("Using StpToolkit_8.4");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
 		bwconv.write("The file path for the first file is: " + (files[0].getAbsolutePath())); bwconv.newLine();
@@ -115,6 +115,21 @@ public class UFCMain {
     	else if (n==3) {monitoringsystem = "-pix";}
 	}
 	
+	public void choosefilebyday() {
+	    Object[] options = {"Output One File","Output One File Per Day"};
+	    int n = JOptionPane.showOptionDialog(frame, 
+    			"How would you like to save the output?", 
+    			"File Converter", 
+    			JOptionPane.YES_NO_OPTION,
+    			JOptionPane.QUESTION_MESSAGE,
+    			null,
+    			options, 
+    			options[0]);
+    	
+    	if (n==0) {breakornobreak = "--no-break";}
+    	else if (n==1) {breakornobreak = "";}
+	}
+	
 	public void vitalsandwaveformschoice() {
 	    Object[] options = {"Vital Signs Only (smaller file)","All Data (larger file)"};
 	    int n = JOptionPane.showOptionDialog(frame,
@@ -149,6 +164,7 @@ public class UFCMain {
 			}
 			if (savewaveformstoggle.length()<2) {
 				vitalsandwaveformschoice();
+				choosefilebyday();
 			}
 			if (ext.equals("Stp")) {
 				bwconv.write("Entered Stp converter"); bwconv.newLine();
@@ -206,7 +222,7 @@ public class UFCMain {
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
 //			String command2 = "X:\\Amanda\\JavaProjects\\fmtcnv_v3.1.1\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + breakornobreak + " --pattern \"" + destfolder + "\\%i_%s.%t\"";
-			String command2 = currentfile + "\\fmtcnv_v3.2.0\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + breakornobreak + " --pattern \"" + destfolder + "\\%i_%s.%t\"";
+			String command2 = currentfile + "\\fmtcnv_v3.3.2\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
 			Process proc2 = rt2.exec(command2);
