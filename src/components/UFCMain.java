@@ -47,7 +47,7 @@ public class UFCMain {
 		{
 			t.printStackTrace();
 		}
-		bwconv = new BufferedWriter(fwconv);
+		bwconv = new BufferedWriter(fwconv); 
 		frame = new JFrame("File Conversion Progress");
 		JLabel label = new JLabel();
 		JProgressBar progressBar;
@@ -59,9 +59,9 @@ public class UFCMain {
 		panel.add(label);
 		frame.add(panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		bwconv.write("Using Universal File Converter v1.0.5"); bwconv.newLine();
-		bwconv.write("(UFC_v1.0.5)");  bwconv.newLine();
-		bwconv.write("Using fmtcnv_v3.3.2");  bwconv.newLine();
+		bwconv.write("Using Universal File Converter v1.0.4"); bwconv.newLine();
+		bwconv.write("(UFC_v1.0.4)");  bwconv.newLine();
+		bwconv.write("Using fmtcnv_v3.3.3");  bwconv.newLine();
 		bwconv.write("Using StpToolkit_8.4");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
 		bwconv.write("The file path for the first file is: " + (files[0].getAbsolutePath())); bwconv.newLine();
@@ -222,7 +222,7 @@ public class UFCMain {
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
 //			String command2 = "X:\\Amanda\\JavaProjects\\fmtcnv_v3.1.1\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + breakornobreak + " --pattern \"" + destfolder + "\\%i_%s.%t\"";
-			String command2 = currentfile + "\\fmtcnv_v3.3.2\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
+			String command2 = currentfile + "\\fmtcnv_v3.3.3\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
 			Process proc2 = rt2.exec(command2);
