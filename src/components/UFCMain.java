@@ -1,5 +1,7 @@
 package components;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,7 +23,7 @@ import org.apache.commons.io.FilenameUtils;
 
 public class UFCMain {
 	
-    String myfilename;
+	String myfilename;
     String outputfiletype = "hdf5";
     String breakornobreak = "--no-break"; // This does not break up the file by day
     String destfolder;
@@ -32,6 +34,13 @@ public class UFCMain {
     JFrame frame; 
     String monitoringsystem = " ";
     String savewaveformstoggle = " ";
+    String justonexml = " ";
+    Process proc1;
+    Process proc2;
+    Boolean process1inprogress = false;
+    Boolean process2inprogress = false;
+    String ext;
+    
     
 	public UFCMain() {
 		// TODO Auto-generated constructor stub
@@ -58,10 +67,23 @@ public class UFCMain {
 		panel.add(progressBar);
 		panel.add(label);
 		frame.add(panel);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		bwconv.write("Using Universal File Converter v1.0.4"); bwconv.newLine();
-		bwconv.write("(UFC_v1.0.4)");  bwconv.newLine();
-		bwconv.write("Using fmtcnv_v3.3.3");  bwconv.newLine();
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter()
+			{
+				@Override
+	            public void windowClosing(WindowEvent e)
+	            {
+	                System.out.println("Closed");
+	                e.getWindow().dispose();
+	                if (process1inprogress) {proc1.destroy();}
+	                if (process2inprogress) {proc2.destroy();}
+	                System.out.println("Processes destroyed");
+	                System.exit(0);
+	            }
+			});
+		bwconv.write("Using Universal File Converter v1.0.5"); bwconv.newLine();
+		bwconv.write("(UFC_v1.0.5)");  bwconv.newLine();
+		bwconv.write("Using fmtcnv_v3.4.0");  bwconv.newLine();
 		bwconv.write("Using StpToolkit_8.4");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
 		bwconv.write("The file path for the first file is: " + (files[0].getAbsolutePath())); bwconv.newLine();
@@ -131,7 +153,7 @@ public class UFCMain {
 	}
 	
 	public void vitalsandwaveformschoice() {
-	    Object[] options = {"Vital Signs Only (smaller file)","All Data (larger file)"};
+	    Object[] options = {"All Data (larger file)","Vital Signs Only (smaller file)","Only a Short Sample File (smallest file)"};
 	    int n = JOptionPane.showOptionDialog(frame,
     			"What would you like to save?", 
     			"File Converter", 
@@ -141,8 +163,12 @@ public class UFCMain {
     			options, 
     			options[0]);
     	
-    	if (n==0) {savewaveformstoggle = " -xw";}
-    	else if (n==1) {savewaveformstoggle = "  ";}
+    	if (n==0) {savewaveformstoggle = "  ";}
+    	else if (n==1) {savewaveformstoggle = " -xw";}
+    	else if (n==2) {
+    		if(ext.equals("Stp")) {savewaveformstoggle = " -s 1 -e 1440";}
+    		else {justonexml = " -1";}
+		} // this converts waveforms and vital signs for the first day/first 1440 segments (which is one day for GE)
 	}
 	
 	
@@ -152,7 +178,7 @@ public class UFCMain {
 		{
 			String currentfile = System.getProperty("user.dir");
 			bwconv.write("Entered runconverter."); bwconv.newLine();
-			String ext = FilenameUtils.getExtension(myfilename);
+			ext = FilenameUtils.getExtension(myfilename);
 			bwconv.write("File extension of file to convert is: " + ext); bwconv.newLine();
 			String plainfilename = FilenameUtils.getBaseName(myfilename);
 			bwconv.write("Plain file name is: " + plainfilename); bwconv.newLine();
@@ -176,14 +202,14 @@ public class UFCMain {
 				String logfilename = (destfolder + "\\" + plainfilename + ".log");
 				File f = new File(logfilename);	
 
-//				String command1 = "X:\\Amanda\\StpToolkit_8.4\\StpToolkit.exe \"" + myfilename + "\" " + monitoringsystem + deidentifyparam + " -o \"" + fullxmlfilepath + "\" -v" + savewaveformstoggle; 
 				String command1 = currentfile + "\\StpToolkit_8.4\\StpToolkit.exe \"" + myfilename + "\" " + monitoringsystem + deidentifyparam + " -o \"" + fullxmlfilepath + "\" -v" + savewaveformstoggle; 
 
 				bwconv.write("Command1 string is: " + command1); bwconv.newLine();
 			    
 			    Runtime rt = Runtime.getRuntime();
 			    ZonedDateTime c1starttime = ZonedDateTime.now();
-			    Process proc1 = rt.exec(command1);
+			    proc1 = rt.exec(command1);
+			    process1inprogress = true;
 			    bwconv.write("Command1 has been executed at " + c1starttime); bwconv.newLine();
 			    Duration d0 = Duration.between(startconversiontime, c1starttime);
 		    	long dur0 = d0.getSeconds();
@@ -203,6 +229,7 @@ public class UFCMain {
 				}
 				
 				proc1.waitFor();
+				process1inprogress = false;
 				ZonedDateTime c1endtime = ZonedDateTime.now();
 				bwconv.write("Command1 waiting has completed at " + c1endtime); bwconv.newLine();
 				
@@ -221,14 +248,15 @@ public class UFCMain {
 				bw.close();
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
-//			String command2 = "X:\\Amanda\\JavaProjects\\fmtcnv_v3.1.1\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + breakornobreak + " --pattern \"" + destfolder + "\\%i_%s.%t\"";
-			String command2 = currentfile + "\\fmtcnv_v3.3.3\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
+			String command2 = currentfile + "\\fmtcnv_v3.4.0\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
-			Process proc2 = rt2.exec(command2);
+			proc2 = rt2.exec(command2);
+			process2inprogress = true;
 			ZonedDateTime c2starttime = ZonedDateTime.now();
 			bwconv.write("Command2 has been executed at " + c2starttime); bwconv.newLine();
 			proc2.waitFor();
+			process2inprogress = false;
 			ZonedDateTime c2endtime = ZonedDateTime.now();
 			bwconv.write("Command2 waiting has completed at " + c2endtime); bwconv.newLine();
 			Duration d2 = Duration.between(c2starttime, c2endtime);
