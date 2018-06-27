@@ -166,7 +166,7 @@ public class UFCMain {
     	if (n==0) {savewaveformstoggle = "  ";}
     	else if (n==1) {savewaveformstoggle = " -xw";}
     	else if (n==2) {
-    		if(ext.equals("Stp")) {savewaveformstoggle = " -s 1 -e 1440";}
+    		if(ext.equalsIgnoreCase("Stp")) {savewaveformstoggle = " -s 1 -e 1440";}
     		else {justonexml = " -1";}
 		} // this converts waveforms and vital signs for the first day/first 1440 segments (which is one day for GE)
 	}
@@ -192,7 +192,7 @@ public class UFCMain {
 				vitalsandwaveformschoice();
 				choosefilebyday();
 			}
-			if (ext.equals("Stp")) {
+			if (ext.equalsIgnoreCase("Stp")) {
 				bwconv.write("Entered Stp converter"); bwconv.newLine();
 				if (monitoringsystem.length()<2) { // If we haven't already chosen a monitoring system, set it here
 					choosemonitoringsystem();
