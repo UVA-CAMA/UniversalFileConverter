@@ -81,8 +81,8 @@ public class UFCMain {
 	                System.exit(0);
 	            }
 			});
-		bwconv.write("Using Universal File Converter v1.0.5"); bwconv.newLine();
-		bwconv.write("(UFC_v1.0.5)");  bwconv.newLine();
+		bwconv.write("Using Universal File Converter v1.0.6"); bwconv.newLine();
+		bwconv.write("(UFC_v1.0.6)");  bwconv.newLine();
 		bwconv.write("Using fmtcnv_v3.4.0");  bwconv.newLine();
 		bwconv.write("Using StpToolkit_8.4");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
