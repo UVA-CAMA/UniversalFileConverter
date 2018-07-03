@@ -9,6 +9,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class UFCRunner {
 
 	public static void main(String[] args) throws IOException {
@@ -36,6 +38,12 @@ public class UFCRunner {
 		int fcdone = fc.showOpenDialog(null);
 		if(fcdone == JFileChooser.APPROVE_OPTION) {
 			files = fc.getSelectedFiles();
+	    	String myfilename = files[0].getAbsolutePath();
+			String ext = FilenameUtils.getExtension(myfilename);
+			if (ext.equalsIgnoreCase("xlsx") || ext.equalsIgnoreCase("xls")) {
+				SimpleExcelReaderExample excelreader = new SimpleExcelReaderExample();
+				files = excelreader.testExcelReader(myfilename);
+			}
 		} 
 		else if(fcdone == JFileChooser.CANCEL_OPTION) {
 			System.exit(0);

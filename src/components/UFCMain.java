@@ -179,6 +179,10 @@ public class UFCMain {
 			String currentfile = System.getProperty("user.dir");
 			bwconv.write("Entered runconverter."); bwconv.newLine();
 			ext = FilenameUtils.getExtension(myfilename);
+			if (ext.equalsIgnoreCase("xlsx") || ext.equalsIgnoreCase("xls")) {
+				SimpleExcelReaderExample excelreader = new SimpleExcelReaderExample();
+				excelreader.testExcelReader(myfilename);
+			}
 			bwconv.write("File extension of file to convert is: " + ext); bwconv.newLine();
 			String plainfilename = FilenameUtils.getBaseName(myfilename);
 			bwconv.write("Plain file name is: " + plainfilename); bwconv.newLine();
