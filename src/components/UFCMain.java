@@ -2,13 +2,14 @@ package components;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
+//import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+//import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
@@ -203,8 +204,13 @@ public class UFCMain {
 				}
 				frame.setVisible(true);
 				String fullxmlfilepath = (destfolder + "\\" + plainfilename + ".xml");
-				String logfilename = (destfolder + "\\" + plainfilename + ".log");
-				File f = new File(logfilename);	
+				String outputfilename = (destfolder + "\\" + plainfilename + "_toxml_output.log");
+				String errorfilename = (destfolder + "\\" + plainfilename + "_toxml_error.log");
+				String inputfilename = (destfolder + "\\" + plainfilename + "_toxml_input.log");
+				
+				File o = new File(outputfilename);	
+				File e = new File(errorfilename);
+				File i = new File(inputfilename);
 
 				String command1 = currentfile + "\\StpToolkit_8.4\\StpToolkit.exe \"" + myfilename + "\" " + monitoringsystem + deidentifyparam + " -o \"" + fullxmlfilepath + "\" -v" + savewaveformstoggle; 
 
@@ -220,17 +226,29 @@ public class UFCMain {
 		    	String dstring0 = Long.toString(dur0);
 		    	bwconv.write("File load time: " + dstring0 + " seconds"); bwconv.newLine();	
 			    
-			    InputStream is = proc1.getInputStream();
-				InputStreamReader isr = new InputStreamReader(is);
-				BufferedReader br1 = new BufferedReader(isr);
-				FileWriter fw = new FileWriter(f);
-				BufferedWriter bw = new BufferedWriter(fw);
+		    	FileOutputStream fos = new FileOutputStream(o);
+		    	FileOutputStream fes = new FileOutputStream(e);
+		    	FileOutputStream fis = new FileOutputStream(i);
+		    	
+		    	StreamGobbler outputGobbler = new StreamGobbler(proc1.getInputStream(),"OUTPUT",fos);
+		    	StreamGobbler errorGobbler = new StreamGobbler(proc1.getErrorStream(),"ERROR",fes);
+		    	StreamGobbler inputGobbler = new StreamGobbler(proc1.getInputStream(),"INPUT",fis);
+		    	
+		    	errorGobbler.start();
+	            outputGobbler.start();
+	            inputGobbler.start();
+		    	
+//			    InputStream is = proc1.getInputStream();
+//				InputStreamReader isr = new InputStreamReader(is);
+//				BufferedReader br1 = new BufferedReader(isr);
+//				FileWriter fw = new FileWriter(f);
+//				BufferedWriter bw = new BufferedWriter(fw);
 				System.out.println(command1);
-				String line = null;
-				while( (line = br1.readLine()) !=null) {
-					bw.write(line);
-					bw.newLine();
-				}
+//				String line = null;
+//				while( (line = br1.readLine()) !=null) {
+//					bw.write(line);
+//					bw.newLine();
+//				}
 				
 				proc1.waitFor();
 				process1inprogress = false;
@@ -244,12 +262,12 @@ public class UFCMain {
 				
 				myfilename = (fullxmlfilepath);
 				bwconv.write("xml file path is: " + myfilename); bwconv.newLine();
-				bw.close();
-				is.close();
-				isr.close();
-				br1.close();
-				fw.close();
-				bw.close();
+//				bw.close();
+//				is.close();
+//				isr.close();
+//				br1.close();
+//				fw.close();
+//				bw.close();
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
 			String command2 = currentfile + "\\fmtcnv_v3.4.0\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
@@ -259,6 +277,27 @@ public class UFCMain {
 			process2inprogress = true;
 			ZonedDateTime c2starttime = ZonedDateTime.now();
 			bwconv.write("Command2 has been executed at " + c2starttime); bwconv.newLine();
+			
+			String outputfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_output.log");
+			String errorfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_error.log");
+			String inputfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_input.log");
+			
+			File o2 = new File(outputfilename2);	
+			File e2 = new File(errorfilename2);
+			File i2 = new File(inputfilename2);
+			
+			FileOutputStream fos2 = new FileOutputStream(o2);
+	    	FileOutputStream fes2 = new FileOutputStream(e2);
+	    	FileOutputStream fis2 = new FileOutputStream(i2);
+	    	
+	    	StreamGobbler outputGobbler2 = new StreamGobbler(proc2.getInputStream(),"OUTPUT",fos2);
+	    	StreamGobbler errorGobbler2 = new StreamGobbler(proc2.getErrorStream(),"ERROR",fes2);
+	    	StreamGobbler inputGobbler2 = new StreamGobbler(proc2.getInputStream(),"INPUT",fis2);
+	    	
+	    	errorGobbler2.start();
+            outputGobbler2.start();
+            inputGobbler2.start();
+            
 			proc2.waitFor();
 			process2inprogress = false;
 			ZonedDateTime c2endtime = ZonedDateTime.now();
