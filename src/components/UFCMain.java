@@ -26,7 +26,7 @@ public class UFCMain {
 	
 	String myfilename;
     String outputfiletype = "hdf5";
-    String breakornobreak = "--no-break"; // This does not break up the file by day
+    String breakornobreak = ""; // This breaks up the file by day
     String destfolder;
     InputStream is;
     File convLog; //Conversion log file
@@ -82,9 +82,9 @@ public class UFCMain {
 	                System.exit(0);
 	            }
 			});
-		bwconv.write("Using Universal File Converter v1.0.6"); bwconv.newLine();
-		bwconv.write("(UFC_v1.0.6)");  bwconv.newLine();
-		bwconv.write("Using fmtcnv_v3.4.0");  bwconv.newLine();
+		bwconv.write("Using Universal File Converter v1.1.0"); bwconv.newLine();
+		bwconv.write("(UFC_v1.1.0)");  bwconv.newLine();
+		bwconv.write("Using fmtcnv_v4.0.5");  bwconv.newLine();
 		bwconv.write("Using StpToolkit_8.4");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
 		bwconv.write("The file path for the first file is: " + (files[0].getAbsolutePath())); bwconv.newLine();
@@ -139,7 +139,7 @@ public class UFCMain {
 	}
 	
 	public void choosefilebyday() {
-	    Object[] options = {"Output One File","Output One File Per Day"};
+	    Object[] options = {"Output One File (NOT Recommended)","Output One File Per Day (RECOMMENDED)"};
 	    int n = JOptionPane.showOptionDialog(frame, 
     			"How would you like to save the output?", 
     			"File Converter", 
@@ -195,7 +195,7 @@ public class UFCMain {
 			}
 			if (savewaveformstoggle.length()<2) {
 				vitalsandwaveformschoice();
-				choosefilebyday();
+				choosefilebyday(); // This gives people the choice to keep everything in one big file - we removed this choice
 			}
 			if (ext.equalsIgnoreCase("Stp")) {
 				bwconv.write("Entered Stp converter"); bwconv.newLine();
@@ -204,11 +204,9 @@ public class UFCMain {
 				}
 				frame.setVisible(true);
 				String fullxmlfilepath = (destfolder + "\\" + plainfilename + ".xml");
-				String outputfilename = (destfolder + "\\" + plainfilename + "_toxml_output.log");
 				String errorfilename = (destfolder + "\\" + plainfilename + "_toxml_error.log");
 				String inputfilename = (destfolder + "\\" + plainfilename + "_toxml_input.log");
 				
-				File o = new File(outputfilename);	
 				File e = new File(errorfilename);
 				File i = new File(inputfilename);
 
@@ -226,16 +224,13 @@ public class UFCMain {
 		    	String dstring0 = Long.toString(dur0);
 		    	bwconv.write("File load time: " + dstring0 + " seconds"); bwconv.newLine();	
 			    
-		    	FileOutputStream fos = new FileOutputStream(o);
 		    	FileOutputStream fes = new FileOutputStream(e);
 		    	FileOutputStream fis = new FileOutputStream(i);
 		    	
-		    	StreamGobbler outputGobbler = new StreamGobbler(proc1.getInputStream(),"OUTPUT",fos);
 		    	StreamGobbler errorGobbler = new StreamGobbler(proc1.getErrorStream(),"ERROR",fes);
 		    	StreamGobbler inputGobbler = new StreamGobbler(proc1.getInputStream(),"INPUT",fis);
 		    	
 		    	errorGobbler.start();
-	            outputGobbler.start();
 	            inputGobbler.start();
 		    	
 //			    InputStream is = proc1.getInputStream();
@@ -270,7 +265,8 @@ public class UFCMain {
 //				bw.close();
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
-			String command2 = currentfile + "\\fmtcnv_v3.4.0\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
+			String command2 = currentfile + "\\fmtcnv_v4.0.5\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
+//			String command2 = currentfile + "\\fmtcnv_v4.0.5\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --pattern \"" + destfolder + "\\%i_%s.%t\"";
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
 			proc2 = rt2.exec(command2);
@@ -278,24 +274,19 @@ public class UFCMain {
 			ZonedDateTime c2starttime = ZonedDateTime.now();
 			bwconv.write("Command2 has been executed at " + c2starttime); bwconv.newLine();
 			
-			String outputfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_output.log");
 			String errorfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_error.log");
 			String inputfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_input.log");
-			
-			File o2 = new File(outputfilename2);	
+				
 			File e2 = new File(errorfilename2);
 			File i2 = new File(inputfilename2);
 			
-			FileOutputStream fos2 = new FileOutputStream(o2);
 	    	FileOutputStream fes2 = new FileOutputStream(e2);
 	    	FileOutputStream fis2 = new FileOutputStream(i2);
 	    	
-	    	StreamGobbler outputGobbler2 = new StreamGobbler(proc2.getInputStream(),"OUTPUT",fos2);
 	    	StreamGobbler errorGobbler2 = new StreamGobbler(proc2.getErrorStream(),"ERROR",fes2);
 	    	StreamGobbler inputGobbler2 = new StreamGobbler(proc2.getInputStream(),"INPUT",fis2);
 	    	
 	    	errorGobbler2.start();
-            outputGobbler2.start();
             inputGobbler2.start();
             
 			proc2.waitFor();
