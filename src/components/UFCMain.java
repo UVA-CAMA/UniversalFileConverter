@@ -276,7 +276,7 @@ public class UFCMain {
 			
 			String errorfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_error.log");
 			String inputfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_input.log");
-				
+			
 			File e2 = new File(errorfilename2);
 			File i2 = new File(inputfilename2);
 			

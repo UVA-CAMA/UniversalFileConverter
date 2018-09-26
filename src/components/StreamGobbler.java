@@ -1,6 +1,12 @@
 package components;
 
-import java.io.*;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.IOException;
+
 class StreamGobbler extends Thread
 {
     InputStream is;
@@ -18,7 +24,7 @@ class StreamGobbler extends Thread
         this.os = redirect;
     }
     
-    public void run()
+	public void run()
     {
         try
         {
