@@ -9,9 +9,11 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 //import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,7 +49,8 @@ public class UFCMain {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void grabfilenameandconvert(File[] files) throws IOException {
+	public void grabfilenameandconvert(File[] filesandfolders) throws IOException {
+		File[] files = checkforfolders(filesandfolders);
 		String currentfile = System.getProperty("user.dir");
 		convLog = new File(currentfile + "//ConversionLogFiles//" + "ConversionLog" + System.currentTimeMillis());
 		try {
@@ -82,9 +85,9 @@ public class UFCMain {
 	                System.exit(0);
 	            }
 			});
-		bwconv.write("Using Universal File Converter v1.1.0"); bwconv.newLine();
-		bwconv.write("(UFC_v1.1.0)");  bwconv.newLine();
-		bwconv.write("Using fmtcnv_v4.0.5");  bwconv.newLine();
+		bwconv.write("Using Universal File Converter v1.1.1"); bwconv.newLine();
+		bwconv.write("(UFC_v1.1.1)");  bwconv.newLine();
+		bwconv.write("Using fmtcnv_v4.0.6");  bwconv.newLine();
 		bwconv.write("Using StpToolkit_8.4");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
 		bwconv.write("The file path for the first file is: " + (files[0].getAbsolutePath())); bwconv.newLine();
@@ -120,6 +123,23 @@ public class UFCMain {
     	label.setText("File conversion complete. Converted files are located in: " + destfolder );
     	bwconv.close();
     }
+	
+	public File[] checkforfolders(File[] files) {
+		ArrayList<File> x = new ArrayList<File>();
+		for (int i=0; i < files.length; i++) {
+			File[] filesinfolder = null;
+			if(files[i].isDirectory()) {
+				filesinfolder = files[i].listFiles();
+				for (int j=0; j < filesinfolder.length; j++) {
+					x.add(filesinfolder[j]);
+				}
+			} else {
+				x.add(files[i]);
+			}
+		}
+		files = x.toArray(new File[x.size()]);
+		return files;
+	}
 	
 	public void choosemonitoringsystem() {
 	    Object[] options = {"Unity (Direct Connect, GE System)","Carescape (GE System)","Viridia (Philips Classic System)","PIICiX (Philips System)"};
@@ -265,8 +285,8 @@ public class UFCMain {
 //				bw.close();
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
-			String command2 = currentfile + "\\fmtcnv_v4.0.5\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
-//			String command2 = currentfile + "\\fmtcnv_v4.0.5\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --pattern \"" + destfolder + "\\%i_%s.%t\"";
+			String command2 = currentfile + "\\fmtcnv_v4.0.6\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
+//			String command2 = currentfile + "\\fmtcnv_v4.0.6\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --pattern \"" + destfolder + "\\%i_%s.%t\"";
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
 			proc2 = rt2.exec(command2);
