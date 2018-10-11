@@ -5,6 +5,9 @@ import java.awt.event.WindowEvent;
 //import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -51,6 +54,16 @@ public class UFCMain {
 	
 	public void grabfilenameandconvert(File[] filesandfolders) throws IOException {
 		File[] files = checkforfolders(filesandfolders);
+		String[] folderlist = storefolders(filesandfolders);
+		int numfiles = folderlist.length;
+		String[] destfolders = new String[numfiles];
+		for (int f=0; f < numfiles; f++) {
+			destfolders[f] = destfolder + "\\" + folderlist[f];
+			Path path = Paths.get(destfolders[f]);
+			if (!Files.exists(path)) {
+				Files.createDirectory(path);
+			}
+		}
 		String currentfile = System.getProperty("user.dir");
 		convLog = new File(currentfile + "//ConversionLogFiles//" + "ConversionLog" + System.currentTimeMillis());
 		try {
@@ -103,7 +116,7 @@ public class UFCMain {
 			frame.pack();
 			frame.setVisible(false);
 			frame.setLocationRelativeTo(null);
-	    	runconverter(startconversiontime);
+	    	runconverter(startconversiontime,destfolders[i]);
 	    	ZonedDateTime endconversiontime = ZonedDateTime.now();
 	    	Duration d = Duration.between(startconversiontime, endconversiontime);
 	    	long dur = d.getSeconds();
@@ -127,9 +140,8 @@ public class UFCMain {
 	public File[] checkforfolders(File[] files) {
 		ArrayList<File> x = new ArrayList<File>();
 		for (int i=0; i < files.length; i++) {
-			File[] filesinfolder = null;
 			if(files[i].isDirectory()) {
-				filesinfolder = files[i].listFiles();
+				File [] filesinfolder = files[i].listFiles();
 				for (int j=0; j < filesinfolder.length; j++) {
 					x.add(filesinfolder[j]);
 				}
@@ -139,6 +151,22 @@ public class UFCMain {
 		}
 		files = x.toArray(new File[x.size()]);
 		return files;
+	}
+	
+	public String[] storefolders(File[] files) {
+		ArrayList<String> folders = new ArrayList<String>();
+		for (int i=0; i < files.length; i++) {
+			if(files[i].isDirectory()) {
+				File [] filesinfolder = files[i].listFiles();
+				for (int j=0; j < filesinfolder.length; j++) {
+					folders.add(files[i].getName());
+				}
+			} else {
+				folders.add("");
+			}
+		}
+		String[] folderstrings = folders.toArray(new String[folders.size()]);
+		return folderstrings;
 	}
 	
 	public void choosemonitoringsystem() {
@@ -193,7 +221,7 @@ public class UFCMain {
 	}
 	
 	
-	public void runconverter(ZonedDateTime startconversiontime) {
+	public void runconverter(ZonedDateTime startconversiontime,String destfoldernew) {
 		// Run Ryan's C executable on the files selected by the user
 		try
 		{
@@ -223,9 +251,9 @@ public class UFCMain {
 					choosemonitoringsystem();
 				}
 				frame.setVisible(true);
-				String fullxmlfilepath = (destfolder + "\\" + plainfilename + ".xml");
-				String errorfilename = (destfolder + "\\" + plainfilename + "_toxml_error.log");
-				String inputfilename = (destfolder + "\\" + plainfilename + "_toxml_input.log");
+				String fullxmlfilepath = (destfoldernew + "\\" + plainfilename + ".xml");
+				String errorfilename = (destfoldernew + "\\" + plainfilename + "_toxml_error.log");
+				String inputfilename = (destfoldernew + "\\" + plainfilename + "_toxml_input.log");
 				
 				File e = new File(errorfilename);
 				File i = new File(inputfilename);
@@ -285,8 +313,8 @@ public class UFCMain {
 //				bw.close();
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
-			String command2 = currentfile + "\\fmtcnv_v4.0.6\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --localtime --pattern \"" + destfolder + "\\%i_%s.%t\"";
-//			String command2 = currentfile + "\\fmtcnv_v4.0.6\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --pattern \"" + destfolder + "\\%i_%s.%t\"";
+			String command2 = currentfile + "\\fmtcnv_v4.0.6\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --localtime --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
+//			String command2 = currentfile + "\\fmtcnv_v4.0.6\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
 			proc2 = rt2.exec(command2);
@@ -294,8 +322,8 @@ public class UFCMain {
 			ZonedDateTime c2starttime = ZonedDateTime.now();
 			bwconv.write("Command2 has been executed at " + c2starttime); bwconv.newLine();
 			
-			String errorfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_error.log");
-			String inputfilename2 = (destfolder + "\\" + plainfilename + "_tohdf5_input.log");
+			String errorfilename2 = (destfoldernew + "\\" + plainfilename + "_tohdf5_error.log");
+			String inputfilename2 = (destfoldernew + "\\" + plainfilename + "_tohdf5_input.log");
 			
 			File e2 = new File(errorfilename2);
 			File i2 = new File(inputfilename2);
