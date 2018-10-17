@@ -2,9 +2,9 @@ package components;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-//import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,12 +12,11 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
-//import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -245,13 +244,14 @@ public class UFCMain {
 				vitalsandwaveformschoice();
 				choosefilebyday(); // This gives people the choice to keep everything in one big file - we removed this choice
 			}
+			String fullxmlfilepath = (destfoldernew + "\\" + plainfilename + ".xml");
+			String fullzipfilepath = (destfoldernew + "\\" + plainfilename + ".zip");
 			if (ext.equalsIgnoreCase("Stp")) {
 				bwconv.write("Entered Stp converter"); bwconv.newLine();
 				if (monitoringsystem.length()<2) { // If we haven't already chosen a monitoring system, set it here
 					choosemonitoringsystem();
 				}
 				frame.setVisible(true);
-				String fullxmlfilepath = (destfoldernew + "\\" + plainfilename + ".xml");
 				String errorfilename = (destfoldernew + "\\" + plainfilename + "_toxml_error.log");
 				String inputfilename = (destfoldernew + "\\" + plainfilename + "_toxml_input.log");
 				
@@ -345,6 +345,11 @@ public class UFCMain {
 	    	long dur2 = d2.getSeconds();
 	    	String dstring2 = Long.toString(dur2);
 	    	bwconv.write("Command 2 Time: " + dstring2 + " seconds"); bwconv.newLine();
+	    	ZonedDateTime zipstarttime = ZonedDateTime.now();
+	    	bwconv.write("Zipping xml file at " + zipstarttime); bwconv.newLine();
+	    	zipmyfile(fullxmlfilepath,fullzipfilepath);
+	    	Path xmlfile = Paths.get(fullxmlfilepath);
+	    	Files.deleteIfExists(xmlfile);
 		}
 		catch(Throwable t)
 		{
@@ -353,8 +358,23 @@ public class UFCMain {
 		System.out.println("Done converting: " + myfilename);
 		
 	}
-	
-
+    
+    public void zipmyfile(String sourceFile, String outputfile) throws Throwable{
+        FileOutputStream fos = new FileOutputStream(outputfile);
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+        File fileToZip = new File(sourceFile);
+        FileInputStream fis = new FileInputStream(fileToZip);
+        ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+        zipOut.putNextEntry(zipEntry);
+        final byte[] bytes = new byte[1024];
+        int length;
+        while((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+        zipOut.close();
+        fis.close();
+        fos.close();
+    }
 	
 		       
 }
