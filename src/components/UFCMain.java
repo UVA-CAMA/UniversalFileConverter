@@ -347,9 +347,11 @@ public class UFCMain {
 	    	bwconv.write("Command 2 Time: " + dstring2 + " seconds"); bwconv.newLine();
 	    	ZonedDateTime zipstarttime = ZonedDateTime.now();
 	    	bwconv.write("Zipping xml file at " + zipstarttime); bwconv.newLine();
-	    	zipmyfile(fullxmlfilepath,fullzipfilepath);
-	    	Path xmlfile = Paths.get(fullxmlfilepath);
-	    	Files.deleteIfExists(xmlfile);
+	    	if (ext.equalsIgnoreCase("Stp")) {
+		    	zipmyfile(fullxmlfilepath,fullzipfilepath);
+		    	Path xmlfile = Paths.get(fullxmlfilepath);
+		    	Files.deleteIfExists(xmlfile);
+	    	}
 		}
 		catch(Throwable t)
 		{
