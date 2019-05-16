@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="X:/Amanda/JavaProjects/Libraries/commons-io-2.6-bin/commons-io-2.6/commons-io-2.6.jar"/>
+	<classpathentry kind="lib" path="X:/Amanda/JavaProjects/Libraries/commons-exec-1.3-bin/commons-exec-1.3/commons-exec-1.3.jar"/>
+	<classpathentry kind="lib" path="X:/Amanda/JavaProjects/Libraries/poi-3.17/poi-3.17.jar"/>
+	<classpathentry kind="lib" path="X:/Amanda/JavaProjects/Libraries/poi-3.17/poi-ooxml-3.17.jar"/>
+	<classpathentry kind="lib" path="X:/Amanda/JavaProjects/Libraries/commons-collections4-4.1.jar"/>
+	<classpathentry kind="lib" path="X:/Amanda/JavaProjects/Libraries/xmlbeans-2.6.0.jar"/>
+	<classpathentry kind="lib" path="X:/Amanda/JavaProjects/Libraries/poi-3.17/poi-ooxml-schemas-3.17.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
