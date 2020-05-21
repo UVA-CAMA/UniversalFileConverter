@@ -97,9 +97,9 @@ public class UFCMain {
 	                System.exit(0);
 	            }
 			});
-		bwconv.write("Using Universal File Converter v1.1.3"); bwconv.newLine();
-		bwconv.write("(UFC_v1.1.3)");  bwconv.newLine();
-		bwconv.write("Using fmtcnv_v4.0.9");  bwconv.newLine();
+		bwconv.write("Using Universal File Converter v1.2.0"); bwconv.newLine();
+		bwconv.write("(UFC_v1.2.0)");  bwconv.newLine();
+		bwconv.write("Using fmtcnv_v4.2.2");  bwconv.newLine();
 		bwconv.write("Using StpToolkit_8.4");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
 		bwconv.write("The file path for the first file is: " + (files[0].getAbsolutePath())); bwconv.newLine();
@@ -313,8 +313,8 @@ public class UFCMain {
 //				bw.close();
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
-			String command2 = currentfile + "\\fmtcnv_v4.0.9\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --localtime --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
-//			String command2 = currentfile + "\\fmtcnv_v4.0.9\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
+			String command2 = currentfile + "\\fmtcnv_v4.2.2\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --localtime --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
+//			String command2 = currentfile + "\\fmtcnv_v4.2.2\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
 			proc2 = rt2.exec(command2);
