@@ -38,7 +38,8 @@ public class UFCMain {
     BufferedWriter bwconv; //Conversion log buffered writer
     JFrame frame; 
     String monitoringsystem = " ";
-    String savewaveformstoggle = " ";
+    String savewaveformstoggle = " "; //For stp to xml conversion
+    String savewaveformstogglefmtcnv = ""; //For fmtcnv
     String justonexml = " ";
     Process proc1;
     Process proc2;
@@ -97,9 +98,9 @@ public class UFCMain {
 	                System.exit(0);
 	            }
 			});
-		bwconv.write("Using Universal File Converter v1.2.0"); bwconv.newLine();
-		bwconv.write("(UFC_v1.2.0)");  bwconv.newLine();
-		bwconv.write("Using fmtcnv_v4.2.2");  bwconv.newLine();
+		bwconv.write("Using Universal File Converter v1.4.0"); bwconv.newLine();
+		bwconv.write("(UFC_v1.4.0)");  bwconv.newLine();
+		bwconv.write("Using fmtcnv_v4.3.2");  bwconv.newLine();
 		bwconv.write("Using StpToolkit_8.4");  bwconv.newLine();
 		bwconv.write("User has chosen to convert " + files.length + " files.");  bwconv.newLine();
 		bwconv.write("The file path for the first file is: " + (files[0].getAbsolutePath())); bwconv.newLine();
@@ -211,12 +212,18 @@ public class UFCMain {
     			options, 
     			options[0]);
     	
-    	if (n==0) {savewaveformstoggle = "  ";}
-    	else if (n==1) {savewaveformstoggle = " -xw";}
+    	if (n==0) {
+    		savewaveformstoggle = "  "; 
+    		savewaveformstogglefmtcnv = "";}
+    	else if (n==1) {
+    		savewaveformstoggle = " -xw";
+    		savewaveformstogglefmtcnv = " --skip-waves ";}
     	else if (n==2) {
-    		if(ext.equalsIgnoreCase("Stp")) {savewaveformstoggle = " -s 1 -e 1440";}
+    		if(ext.equalsIgnoreCase("Stp")) {
+    			savewaveformstoggle = " -s 1 -e 1440"; // this converts waveforms and vital signs for the first day/first 1440 segments (which is one day for GE)
+    			savewaveformstogglefmtcnv = "";}
     		else {justonexml = " -1";}
-		} // this converts waveforms and vital signs for the first day/first 1440 segments (which is one day for GE)
+		} 
 	}
 	
 	
@@ -313,8 +320,8 @@ public class UFCMain {
 //				bw.close();
 			} else {frame.setVisible(true);}
 			Runtime rt2 = Runtime.getRuntime();
-			String command2 = currentfile + "\\fmtcnv_v4.2.2\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --localtime --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
-//			String command2 = currentfile + "\\fmtcnv_v4.2.2\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + " --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
+			String command2 = currentfile + "\\fmtcnv_v4.3.2\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + savewaveformstogglefmtcnv + " --localtime --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
+//			String command2 = currentfile + "\\fmtcnv_v4.3.2\\formatconverter --to " + outputfiletype + " \"" + myfilename + "\" " + justonexml + " " + breakornobreak + savewaveformstogglefmtcnv + " --pattern \"" + destfoldernew + "\\%i_%s.%t\"";
 			bwconv.write("Command2 string is: " + command2); bwconv.newLine();
 			System.out.println(command2);
 			proc2 = rt2.exec(command2);

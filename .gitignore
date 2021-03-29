@@ -35,3 +35,6 @@ hs_err_pid*
 ConversionLogFiles/*
 StpToolkit_8.4/*
 fmtcnv_v3.1.1/*
+/nbproject/private/
+/build/
+/dist/
